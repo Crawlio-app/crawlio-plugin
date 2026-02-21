@@ -1,0 +1,10 @@
+{
+  "name": "crawlio",
+  "description": "AI-powered website crawling, observation, and analysis — powered by Crawlio",
+  "version": "1.0.0",
+  "author": { "name": "Crawlio" },
+  "homepage": "https://crawlio.app",
+  "repository": "https://github.com/crawlio/crawlio-plugin",
+  "license": "MIT",
+  "keywords": ["crawling", "web-scraping", "site-analysis", "observation", "mcp"]
+}
