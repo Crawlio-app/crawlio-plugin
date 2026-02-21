@@ -1,3 +1,8 @@
+---
+name: observe
+description: Use this skill when the user asks to "check observations", "what did Crawlio see", "show crawl timeline", "query the observation log", or wants to review what happened during a crawl session. Queries the append-only observation log with filtering by host, source, operation, and time range.
+---
+
 # observe
 
 Query Crawlio's observation log — the append-only timeline of everything Crawlio observed during a crawl session.

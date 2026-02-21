@@ -1,3 +1,8 @@
+---
+name: crawl-site
+description: Use this skill when the user asks to "crawl a site", "download a website", "mirror a site", "scrape a site", or wants to download web pages for offline access or analysis. Configures Crawlio settings based on site type, starts the crawl, monitors progress, and reports results.
+---
+
 # crawl-site
 
 Crawl a website using Crawlio. Configures settings based on site type, starts the crawl, monitors progress, and reports results.

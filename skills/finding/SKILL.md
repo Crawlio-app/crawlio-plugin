@@ -1,3 +1,8 @@
+---
+name: finding
+description: Use this skill when the user asks to "create a finding", "record an insight", "what findings exist", "show findings", or wants to create or review evidence-backed analysis insights from crawl observations. Creates and queries curated findings with evidence chains.
+---
+
 # finding
 
 Create and query curated findings in Crawlio's observation log. Findings are agent-created insights backed by observation evidence.
