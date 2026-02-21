@@ -1,7 +1,10 @@
 {
   "mcpServers": {
     "crawlio": {
-      "command": "${CRAWLIO_MCP_PATH:-/path/to/.build/release/CrawlioMCP}"
+      "command": "CrawlioMCP",
+      "env": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin"
+      }
     }
   }
 }

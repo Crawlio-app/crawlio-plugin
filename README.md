@@ -29,24 +29,27 @@ Clone this repo (or copy the directory) and install it in Claude Code:
 claude plugin install /path/to/crawlio-plugin
 ```
 
-### 2. Configure the MCP Server Path
+### 2. Make CrawlioMCP Available in PATH
 
-Edit `.mcp.json` in this plugin directory and set the path to your `CrawlioMCP` binary:
+The plugin expects `CrawlioMCP` to be in your `$PATH`. After building, symlink or copy it:
+
+```bash
+# Option A: symlink into /usr/local/bin
+ln -sf /path/to/Crawlio-app/.build/release/CrawlioMCP /usr/local/bin/CrawlioMCP
+
+# Option B: or edit .mcp.json to use the full path
+```
+
+If you prefer a full path, edit `.mcp.json` in this plugin directory:
 
 ```json
 {
   "mcpServers": {
     "crawlio": {
-      "command": "/path/to/.build/release/CrawlioMCP"
+      "command": "/path/to/Crawlio-app/.build/release/CrawlioMCP"
     }
   }
 }
-```
-
-Or set the `CRAWLIO_MCP_PATH` environment variable:
-
-```bash
-export CRAWLIO_MCP_PATH=/path/to/.build/release/CrawlioMCP
 ```
 
 ### 3. Start Crawlio
