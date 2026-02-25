@@ -3,17 +3,17 @@
 </p>
 
 
-# Crawlio Plugin for Claude Code
+# Crawlio AI Skills
 
-AI-powered website crawling, observation, and analysis for Claude Code.
+Give any AI agent the ability to crawl, observe, and analyze websites using [Crawlio](https://crawlio.app).
 
-This plugin connects Claude Code to [Crawlio](https://crawlio.app), a macOS website downloader, giving AI agents the ability to crawl websites, capture browser intelligence, and produce evidence-backed findings.
+5 skills, 1 agent, and an MCP server — packaged as a plugin that follows the [Agent Skills](https://agentskills.io) open standard. The plugin format is just the distribution mechanism. The skills themselves are plain Markdown files that encode domain judgment: when to use which settings, how to interpret observations, what constitutes a finding.
 
 ## Prerequisites
 
-1. **Crawlio** — the macOS app must be installed and running (direct distribution, not App Store)
+1. **Crawlio** — the macOS app must be installed and running ([download](https://crawlio.app))
 2. **CrawlioMCP** — the MCP server binary, built from the Crawlio repo
-3. **Claude Code** — with plugin support enabled
+3. **An AI coding tool** with plugin or MCP support (Claude Code, Cursor, Windsurf, etc.)
 
 ### Build CrawlioMCP
 
@@ -26,17 +26,19 @@ The binary lands at `.build/release/CrawlioMCP`.
 
 ## Setup
 
-### 1. Install the Plugin
+### 1. Install
 
-Clone this repo (or copy the directory) and install it in Claude Code:
+**Claude Code** (plugin install):
 
 ```bash
 claude plugin install /path/to/crawlio-plugin
 ```
 
+**Other MCP clients** (manual config): Copy the `.mcp.json` contents into your client's MCP configuration. The skills in `skills/` work as standalone Markdown instructions in any agent that supports them.
+
 ### 2. Make CrawlioMCP Available in PATH
 
-The plugin expects `CrawlioMCP` to be in your `$PATH`. After building, symlink or copy it:
+The MCP config expects `CrawlioMCP` to be in your `$PATH`. After building, symlink or copy it:
 
 ```bash
 # Option A: symlink into /usr/local/bin
@@ -45,7 +47,7 @@ ln -sf /path/to/Crawlio-app/.build/release/CrawlioMCP /usr/local/bin/CrawlioMCP
 # Option B: or edit .mcp.json to use the full path
 ```
 
-If you prefer a full path, edit `.mcp.json` in this plugin directory:
+If you prefer a full path, edit `.mcp.json` in this directory:
 
 ```json
 {
@@ -65,15 +67,25 @@ Launch the Crawlio macOS app. It starts a local HTTP control server automaticall
 
 ### `/crawlio:crawl-site`
 
-Crawl a website with intelligent configuration. Handles site type detection, settings optimization, progress monitoring, and failure retry.
+Crawl a website with intelligent configuration. Detects site type, optimizes settings, monitors progress, retries failures, and reports results.
 
 ```
 /crawlio:crawl-site https://example.com
 ```
 
+### `/crawlio:extract-and-export`
+
+End-to-end pipeline: crawl a site, extract structured content (clean HTML, markdown, metadata), and export in any of 7 formats.
+
+```
+/crawlio:extract-and-export https://docs.stripe.com 5 warc
+```
+
+Supported formats: `folder`, `zip`, `singleHTML`, `warc`, `pdf`, `extracted`, `deploy`
+
 ### `/crawlio:observe`
 
-Query the observation log — the timeline of everything Crawlio observed. Filter by host, source, operation type, or time range.
+Query the observation log — the append-only timeline of everything Crawlio saw during a crawl. Filter by host, source, operation type, or time range.
 
 ```
 /crawlio:observe example.com
@@ -81,7 +93,7 @@ Query the observation log — the timeline of everything Crawlio observed. Filte
 
 ### `/crawlio:finding`
 
-Create and query curated findings with evidence chains. Record insights that persist across sessions.
+Create and query evidence-backed findings. Record insights with observation IDs as evidence that persist across sessions.
 
 ```
 /crawlio:finding
@@ -89,7 +101,7 @@ Create and query curated findings with evidence chains. Record insights that per
 
 ### `/crawlio:audit-site`
 
-Full site audit: crawl, capture enrichment, analyze observations, and produce a findings report with prioritized recommendations.
+Full site audit: crawl, capture enrichment, analyze observations across multiple passes, and produce a findings report with prioritized recommendations.
 
 ```
 /crawlio:audit-site https://example.com
@@ -99,9 +111,8 @@ Full site audit: crawl, capture enrichment, analyze observations, and produce a 
 
 ### Site Auditor
 
-A custom agent for systematic multi-pass site analysis. Located at `agents/site-auditor.md`.
+A custom agent (`agents/site-auditor.md`) for systematic multi-pass site analysis:
 
-The site auditor follows a structured protocol:
 1. Reconnaissance and configuration
 2. Crawl with monitoring
 3. Multi-pass analysis (structure, errors, enrichment, synthesis)
@@ -110,15 +121,19 @@ The site auditor follows a structured protocol:
 ## How It Works
 
 ```
-Claude Code  ──skill──►  CrawlioMCP  ──HTTP──►  Crawlio App
-                         (stdio MCP)             (macOS, 127.0.0.1)
-                              │
-                              ▼
-                         observations.jsonl
-                         (per-project timeline)
+AI Agent  ──skill──►  CrawlioMCP  ──HTTP──►  Crawlio App
+                      (stdio MCP)             (macOS, 127.0.0.1)
+                           │
+                           ▼
+                      observations.jsonl
+                      (per-project timeline)
 ```
 
-The plugin's skills encode *judgment* — when to use which settings, how to interpret observations, what constitutes a finding. The MCP server handles the *mechanics* — HTTP calls, file reads, protocol bridging.
+**Skills** encode *judgment* — when to use which settings, how to interpret observations, what constitutes a finding.
+
+**MCP server** handles *mechanics* — HTTP calls, file reads, protocol bridging.
+
+This separation is what makes the plugin forkable: swap the judgment layer for your domain, keep the same mechanics.
 
 ## Optional: Chrome Extension
 
@@ -126,4 +141,8 @@ For deeper analysis, install the [Crawlio Agent](https://github.com/crawlio/craw
 
 ## Fork This Plugin
 
-This plugin is designed to be forked and customized. See [FORKING.md](FORKING.md) for a guide on creating domain-specific versions.
+This plugin is designed to be forked and customized. See [FORKING.md](FORKING.md) for a guide on creating domain-specific versions (SEO auditor, security scanner, competitive analysis, content migration planner).
+
+## License
+
+MIT

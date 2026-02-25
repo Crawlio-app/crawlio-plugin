@@ -19,6 +19,7 @@ Skills are Markdown files that guide Claude's behavior. Edit them to focus on yo
 | File | What to Change |
 |------|---------------|
 | `skills/crawl-site/SKILL.md` | Settings presets, site type detection logic |
+| `skills/extract-and-export/SKILL.md` | Export format defaults, extraction pipeline steps |
 | `skills/observe/SKILL.md` | Which observations matter for your use case |
 | `skills/finding/SKILL.md` | Finding categories, quality criteria |
 | `skills/audit-site/SKILL.md` | Audit checklist, report structure |
