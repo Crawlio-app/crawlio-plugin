@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/banner-1.svg" alt="Crawlio AI Skills" width="820">
+  <img src=".github/banner-1.svg" alt="Crawlio AI Skills" width="650">
 </p>
 
 <p align="center">
