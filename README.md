@@ -33,7 +33,7 @@
 |-------------|-------------|
 | **Crawlio** | macOS app, installed and running — [download](https://crawlio.app) |
 | **CrawlioMCP** | MCP server binary (see below) |
-| **AI tool** | Any tool with plugin or MCP support (Claude Code, Cursor, Windsurf, etc.) |
+| **AI tool** | Any tool with MCP support (Claude Code, Gemini CLI, Cursor, Windsurf, etc.) |
 
 ### Build CrawlioMCP
 
@@ -54,7 +54,19 @@ Binary lands at `.build/release/CrawlioMCP`.
 claude plugin install /path/to/crawlio-plugin
 ```
 
-**Other MCP clients** — copy `.mcp.json` contents into your client's MCP config. The skills in `skills/` work as standalone Markdown instructions in any agent that supports them.
+**Gemini CLI** — add to your [MCP server config](https://geminicli.com/docs/tools/mcp-server/):
+
+```json
+{
+  "mcpServers": {
+    "crawlio": {
+      "command": "CrawlioMCP"
+    }
+  }
+}
+```
+
+**Other MCP clients** (Cursor, Windsurf, etc.) — copy the `.mcp.json` contents into your client's MCP config. The skills in `skills/` work as standalone Markdown instructions in any agent that supports them.
 
 ### Make CrawlioMCP available in PATH
 
