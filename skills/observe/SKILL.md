@@ -75,6 +75,16 @@ get_observations({
 })
 ```
 
+## Single Observation Lookup
+
+Look up a specific observation or finding by ID:
+
+```
+get_observation({ id: "obs_a1b2c3d4" })
+```
+
+Use this to verify evidence referenced by findings, or to inspect the full payload of an `evidenceId` returned by `analyze_page`. Works with both `obs_xxx` (observation) and `fnd_xxx` (finding) IDs.
+
 ## Reading Observations
 
 Each observation entry contains:
@@ -107,6 +117,13 @@ See everything the Chrome extension captured:
 ```
 get_observations({ source: "extension", limit: 200 })
 ```
+
+### Evidence Chain Verification
+Verify evidence referenced by a finding:
+```
+get_observation({ id: "obs_a1b2c3d4" })
+```
+This returns the full observation entry. Use it to confirm that evidence IDs in findings actually support the claimed insight.
 
 ### After Observation — Create Findings
 Once you've identified patterns in observations, use the `finding` skill to record insights with evidence chains.

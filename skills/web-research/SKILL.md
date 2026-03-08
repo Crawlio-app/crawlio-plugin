@@ -17,8 +17,9 @@ Use composite tools to gather evidence. Never use the low-level `trigger_capture
 
 | Goal | Tool | Notes |
 |------|------|-------|
-| Single-page evidence | `analyze_page` | One call = capture + enrichment + crawl status |
-| Two-site comparison | `compare_pages` | Sequential analysis with comparison summary |
+| Single-page evidence | `analyze_page` | One call = capture + enrichment + crawl status. Returns `evidenceId`, `evidenceQuality`, `gaps` |
+| Two-site comparison | `compare_pages` | Sequential analysis with typed comparison evidence |
+| Single evidence lookup | `get_observation` | Verify a specific evidence record by ID |
 | Bulk crawl data | `get_crawled_urls` | After a completed crawl |
 | Historical timeline | `get_observations` | Append-only audit trail |
 
@@ -34,6 +35,11 @@ Structure evidence from the unified records into canonical form before analysis:
 Check `enrichmentStatus` before using enrichment data:
 - `"ok"` — enrichment data is present and usable
 - `"timeout"` — capture completed but enrichment didn't arrive in time; note this gap
+
+Check `evidenceQuality` for overall evidence health:
+- `"complete"` — no gaps, all data present
+- `"partial"` — has gaps but capture succeeded
+- `"degraded"` — capture-level failure or enrichment server error
 
 ### 3. Analyze
 
@@ -65,7 +71,13 @@ For side-by-side analysis of two sites:
 compare_pages({ urlA: "https://site-a.com", urlB: "https://site-b.com" })
 ```
 
-The response includes a `comparisonSummary` with deterministic field-level presence data. Use this scaffold before deeper analysis.
+The response includes a `comparisonSummary` with typed evidence fields:
+- `comparisonReadiness` — `ready` (both complete), `cautious` (one partial), `unreliable` (either degraded)
+- `symmetric` — whether both sides have identical gap profiles
+- `degradationNotes` — human-readable list of gaps per side
+- `timingDelta` — absolute timing differences (capture, enrichment polling)
+- `enrichmentAgeDeltaMs` — timestamp difference between the two analyses
+- `evidenceIdA` / `evidenceIdB` — observation IDs for round-trip verification via `get_observation`
 
 ### Comparison Dimensions
 
@@ -93,7 +105,9 @@ create_finding({
   title: "Site uses Next.js 14 with ISR",
   url: "https://example.com",
   evidence: ["obs_abc123"],
-  synthesis: "Framework detection confirmed Next.js 14.2.0 with incremental static regeneration..."
+  synthesis: "Framework detection confirmed Next.js 14.2.0 with incremental static regeneration...",
+  confidence: "high",
+  category: "framework"
 })
 ```
 

@@ -36,7 +36,9 @@ create_finding({
   title: "Mixed content: HTTP images on HTTPS page",
   url: "https://example.com",
   evidence: ["obs_a3f7b2c1", "obs_b4e8c3d2"],
-  synthesis: "Homepage loads 3 images over HTTP despite serving over HTTPS. Network observations show requests to http://cdn.example.com/img/ which should use HTTPS. This triggers mixed content warnings in Chrome and may cause images to be blocked in strict mode."
+  synthesis: "Homepage loads 3 images over HTTP despite serving over HTTPS. Network observations show requests to http://cdn.example.com/img/ which should use HTTPS. This triggers mixed content warnings in Chrome and may cause images to be blocked in strict mode.",
+  confidence: "high",
+  category: "security"
 })
 ```
 
@@ -48,6 +50,8 @@ create_finding({
 | `url` | string | No | URL this finding relates to |
 | `evidence` | [string] | No | Array of observation IDs (`obs_xxx`) |
 | `synthesis` | string | No | Detailed explanation |
+| `confidence` | string | No | `high`, `medium`, `low`, or `none` |
+| `category` | string | No | Dimension (e.g. `performance`, `security`, `framework`) |
 
 ### Finding Quality Checklist
 
@@ -90,9 +94,18 @@ When creating findings, consider these common categories:
 | **Structure** | "Orphaned pages not linked from navigation" |
 | **Accessibility** | "Missing alt attributes on hero images" |
 
+## Evidence Chain
+
+The full evidence chain workflow:
+1. `analyze_page` → returns `evidenceId`
+2. `create_finding` → reference the `evidenceId` in the `evidence` array
+3. `get_observation` → verify the evidence entry exists and supports the finding
+
 ## Tips
 
 - Create findings as you analyze, not all at the end — they persist across sessions
 - Reference multiple observation IDs when a finding draws from several data points
 - Use synthesis to explain the *impact*, not just restate the observation
 - Findings with evidence chains are much more useful than findings without
+- Use `confidence` to signal how strongly the evidence supports the claim
+- Use `category` to enable filtering by dimension (performance, security, SEO, etc.)
