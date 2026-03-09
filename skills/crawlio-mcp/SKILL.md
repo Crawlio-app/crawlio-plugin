@@ -56,8 +56,8 @@ Crawlio MCP exposes **37 tools** (full mode) or **6 tools** (code mode) over std
 **get_settings** — Current pending settings + policy. No params.
 
 **update_settings** — Partial merge (idle only).
-- `settings` (object, opt): maxConcurrent, crawlDelay, timeout, downloadImages, downloadVideo, downloadFonts, downloadScripts, downloadStyles, userAgent, maxRetries, stripTrackingParams, customCookies, customHeaders.
-- `policy` (object, opt): scopeMode, maxDepth, maxPagesPerCrawl, respectRobotsTxt, excludePatterns, includePatterns, includeSupportingFiles, downloadCrossDomainAssets, autoUpgradeHTTP.
+- `settings` (object, opt): maxConcurrent, crawlDelay, timeout, downloadImages, downloadVideo, downloadFonts, downloadScripts, downloadStyles, userAgent, maxRetries, stripTrackingParams, customCookies, customHeaders, preferHTTP2 (bool), proxyConfiguration ({type: "http"/"https"/"socks5", host, port, username?, password?, noProxyHosts?}).
+- `policy` (object, opt): scopeMode, maxDepth, maxPagesPerCrawl, respectRobotsTxt, excludePatterns, includePatterns, includeSupportingFiles, downloadCrossDomainAssets, autoUpgradeHTTP, pinnedPublicKeys ({hostname: [sha256HexStrings]}).
 
 **recrawl_urls** — Re-crawl specific URLs.
 - `urls` (string[], required).
@@ -83,6 +83,7 @@ Crawlio MCP exposes **37 tools** (full mode) or **6 tools** (code mode) over std
 **export_site** — Export downloaded site.
 - `format` (string, required): folder | zip | singleHTML | warc
 - `destinationPath` (string, required).
+- `warcConfiguration` (object, opt): compressionEnabled (bool, default true), maxFileSize (int, default 1GB, 0=no split), cdxEnabled (bool, default true), dedupEnabled (bool, default true).
 
 **get_export_status** — Export state + progress. No params.
 
@@ -223,6 +224,13 @@ Accessible via `execute_api` but not as MCP tools:
 3. `get_crawl_status` — Poll until `engineState` is `completed`. Use `since` param for efficient polling.
 4. `export_site` — Export as zip/folder/singleHTML/warc.
 5. `get_export_status` — Confirm export finished.
+
+### WARC Export with Options
+1. `update_settings` — Configure proxy/pinning if needed: `{settings: {proxyConfiguration: {type: "http", host: "proxy.corp", port: 8080}}}`.
+2. `start_crawl` — Crawl the target site.
+3. `get_crawl_status` — Poll until completed.
+4. `export_site` — Export with WARC options: `{format: "warc", destinationPath: "/tmp/archive.warc.gz", warcConfiguration: {compressionEnabled: true, cdxEnabled: true, dedupEnabled: true, maxFileSize: 0}}`.
+5. Validate: CDX sidecar created, revisit records for dedup, GZIP compression.
 
 ### Enrichment Pipeline
 1. `trigger_capture(url)` — Run WebKit capture.
