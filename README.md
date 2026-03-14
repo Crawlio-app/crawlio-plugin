@@ -15,12 +15,13 @@
 
 ---
 
-5 skills, 1 agent, and an MCP server — packaged as a plugin that follows the [Agent Skills](https://agentskills.io) open standard. The skills are plain Markdown files that encode domain judgment: when to use which settings, how to interpret observations, what constitutes a finding. The plugin format is just the distribution mechanism.
+6 skills, 3 commands, 1 agent, and an MCP server — packaged as a plugin that follows the [Agent Skills](https://agentskills.io) open standard. The skills are plain Markdown files that encode domain judgment: when to use which settings, how to interpret observations, what constitutes a finding. The plugin format is just the distribution mechanism.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
+- [Intelligence Runtime](#intelligence-runtime)
 - [Skills](#skills)
 - [Agent](#agent)
 - [How It Works](#how-it-works)
@@ -90,6 +91,22 @@ Or edit `.mcp.json` to use a full path:
 
 Launch the Crawlio macOS app. It starts a local HTTP control server automatically.
 
+## Intelligence Runtime
+
+The plugin includes two orchestration layers for structured web investigation:
+
+| Command | Layer | Description |
+|---------|-------|-------------|
+| `/crawlio:crawlio-loop` | **Crawlio Loops** | AI-orchestrated multi-phase pipelines via Claude Code agents. Deep, flexible. ~2-5 min, $0.05-0.50/run |
+| `/crawlio:crawlio-seq` | **Crawlio Sequences** | Deterministic Swift state machines with local AI inference. Fast, free. ~5-30 sec, $0.00-0.01/run |
+| `/crawlio:help` | — | Explain the intelligence runtime |
+
+Both layers produce interchangeable `EvidenceEnvelope<T>` evidence across 7 investigation families:
+
+**investigate** · **monitor** · **extract** · **compare** · **clone** · **test** · **compose**
+
+Crawlio Loops use [crawlio-browser-agent](https://github.com/Crawlio-app/crawlio-browser-agent) for browser-side intelligence. Crawlio Sequences use the native [Crawlio](https://crawlio.app) macOS app with optional local AI inference via Apple Neural Engine.
+
 ## Skills
 
 | Skill | Description |
@@ -99,6 +116,7 @@ Launch the Crawlio macOS app. It starts a local HTTP control server automaticall
 | [`observe`](#crawlioobserve) | Query the observation timeline with filters |
 | [`finding`](#crawliofinding) | Create and query evidence-backed findings |
 | [`audit-site`](#crawlioaudit-site) | Multi-pass site audit with findings report |
+| [`crawlio-seq`](#crawliocrawlio-seq) | Manage the intelligence runtime — create loops and sequences |
 
 ### `/crawlio:crawl-site`
 
