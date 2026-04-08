@@ -1,0 +1,17 @@
+{
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "matcher": "Write|Edit",
+      "type": "command",
+      "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/evidence-gate.sh\"",
+      "timeout": 5
+    },
+    {
+      "event": "Stop",
+      "type": "command",
+      "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-handoff.sh\"",
+      "timeout": 10
+    }
+  ]
+}

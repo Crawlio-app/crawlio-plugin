@@ -1,10 +1,10 @@
 {
   "name": "crawlio",
-  "description": "AI skills for website crawling, observation, and analysis — powered by Crawlio",
-  "version": "1.1.0",
+  "description": "AI skills and intelligence runtime for website crawling, investigation, and analysis — powered by Crawlio",
+  "version": "1.2.0",
   "author": { "name": "Crawlio" },
   "homepage": "https://crawlio.app",
   "repository": "https://github.com/Crawlio-app/crawlio-plugin",
   "license": "MIT",
-  "keywords": ["crawling", "web-scraping", "site-analysis", "observation", "mcp", "agent-skills"]
+  "keywords": ["crawling", "web-scraping", "site-analysis", "observation", "mcp", "agent-skills", "intelligence-runtime", "investigation"]
 }
