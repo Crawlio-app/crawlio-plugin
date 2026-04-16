@@ -2,6 +2,8 @@
 name: extract-and-export
 description: Use this skill when the user asks to "download and export a site", "crawl and extract content", "archive a website", "export as WARC/ZIP/PDF", or wants a complete crawl-extract-export pipeline. Crawls the site, extracts structured content, and exports in the requested format.
 argument-hint: <url> [maxDepth] [format]
+license: MIT
+version: 2.0.0
 ---
 
 # extract-and-export

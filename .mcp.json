@@ -1,10 +1,9 @@
 {
   "mcpServers": {
     "crawlio": {
-      "command": "CrawlioMCP",
-      "env": {
-        "PATH": "/usr/local/bin:/usr/bin:/bin"
-      }
+      "command": "npx",
+      "args": ["-y", "@crawlio/mcp@latest"],
+      "env": {}
     }
   }
 }

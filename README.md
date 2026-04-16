@@ -9,179 +9,114 @@
   <a href="https://crawlio.app"><img src="https://img.shields.io/badge/platform-macOS_15+-white" alt="macOS 15+"></a>
 </p>
 
-<p align="center">
-  Give any AI agent the ability to crawl, observe, and analyze websites.
-</p>
-
 ---
 
-5 skills, 1 agent, and an MCP server — packaged as a plugin that follows the [Agent Skills](https://agentskills.io) open standard. The skills are plain Markdown files that encode domain judgment: when to use which settings, how to interpret observations, what constitutes a finding. The plugin format is just the distribution mechanism.
+Crawl, reverse-engineer, and analyze any website from your AI agent.
 
-## Table of Contents
+10 skills. 1 agent. One MCP server behind all of it.
 
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Skills](#skills)
-- [Agent](#agent)
-- [How It Works](#how-it-works)
-- [Forking](#forking)
-- [License](#license)
-
-## Prerequisites
-
-| Requirement | Description |
-|-------------|-------------|
-| **Crawlio** | macOS app, installed and running — [download](https://crawlio.app) |
-| **CrawlioMCP** | MCP server binary (see below) |
-| **AI tool** | Any tool with MCP support (Claude Code, Gemini CLI, Cursor, Windsurf, etc.) |
-
-### Build CrawlioMCP
+## Install
 
 ```bash
-cd /path/to/Crawlio-app
-swift build -c release --product CrawlioMCP
+claude plugin install github:Crawlio-app/crawlio-plugin
 ```
 
-Binary lands at `.build/release/CrawlioMCP`.
-
-## Setup
-
-### Install
-
-**Claude Code** — plugin install:
-
-```bash
-claude plugin install /path/to/crawlio-plugin
-```
-
-**Gemini CLI** — add to your [MCP server config](https://geminicli.com/docs/tools/mcp-server/):
+Or add the server directly to any MCP client:
 
 ```json
 {
   "mcpServers": {
     "crawlio": {
-      "command": "CrawlioMCP"
+      "command": "npx",
+      "args": ["-y", "@crawlio/mcp@latest"]
     }
   }
 }
 ```
 
-**Other MCP clients** (Cursor, Windsurf, etc.) — copy the `.mcp.json` contents into your client's MCP config. The skills in `skills/` work as standalone Markdown instructions in any agent that supports them.
+Works with Claude Code, Gemini CLI, Cursor, Windsurf. Anything that speaks MCP.
 
-### Make CrawlioMCP available in PATH
-
-```bash
-ln -sf /path/to/Crawlio-app/.build/release/CrawlioMCP /usr/local/bin/CrawlioMCP
-```
-
-Or edit `.mcp.json` to use a full path:
-
-```json
-{
-  "mcpServers": {
-    "crawlio": {
-      "command": "/path/to/Crawlio-app/.build/release/CrawlioMCP"
-    }
-  }
-}
-```
-
-### Start Crawlio
-
-Launch the Crawlio macOS app. It starts a local HTTP control server automatically.
+No build step. No binary. `npx` handles it.
 
 ## Skills
 
-| Skill | Description |
+| Skill | What it does |
 |-------|-------------|
-| [`crawl-site`](#crawliocrawl-site) | Crawl with intelligent config, monitoring, and retry |
-| [`extract-and-export`](#crawlioextract-and-export) | Full pipeline: crawl, extract, export in 7 formats |
-| [`observe`](#crawlioobserve) | Query the observation timeline with filters |
-| [`finding`](#crawliofinding) | Create and query evidence-backed findings |
-| [`audit-site`](#crawlioaudit-site) | Multi-pass site audit with findings report |
+| [`crawlio-mcp`](skills/crawlio-mcp) | Entry point. Explains the server, routes you to the right skill |
+| [`crawl-site`](skills/crawl-site) | Crawl with config, monitoring, and retry |
+| [`extract-and-export`](skills/extract-and-export) | Crawl, extract, export. 7 formats |
+| [`observe`](skills/observe) | Query the observation timeline |
+| [`finding`](skills/finding) | Create and query evidence-backed findings |
+| [`audit-site`](skills/audit-site) | Multi-pass site audit with findings report |
+| [`web-research`](skills/web-research) | Structured acquire, normalize, analyze pipeline |
+| [`decompile-spa`](skills/decompile-spa) | Reverse-engineer an SPA: modules, routes, state |
+| [`extract-secrets`](skills/extract-secrets) | Scan JS bundles for hardcoded credentials. Authorized targets only |
+| [`design-system`](skills/design-system) | Extract design tokens from a live page. Colors, type, spacing, breakpoints |
 
-### `/crawlio:crawl-site`
-
-Crawl a website with intelligent configuration. Detects site type (static, SPA, CMS, docs), optimizes settings, monitors progress, retries failures, and reports results.
-
-```
-/crawlio:crawl-site https://example.com
-```
-
-### `/crawlio:extract-and-export`
-
-End-to-end pipeline: crawl a site, extract structured content (clean HTML, markdown, metadata), and export in any of 7 formats.
-
-```
-/crawlio:extract-and-export https://docs.stripe.com 5 warc
-```
-
-Supported formats: `folder` `zip` `singleHTML` `warc` `pdf` `extracted` `deploy`
-
-### `/crawlio:observe`
-
-Query the observation log — the append-only timeline of everything Crawlio saw during a crawl. Filter by host, source, operation type, or time range.
-
-```
-/crawlio:observe example.com
-```
-
-### `/crawlio:finding`
-
-Create and query evidence-backed findings. Record insights with observation IDs as evidence that persist across sessions.
-
-```
-/crawlio:finding
-```
-
-### `/crawlio:audit-site`
-
-Full site audit: crawl, capture enrichment, analyze observations across multiple passes, and produce a findings report with prioritized recommendations.
-
-```
-/crawlio:audit-site https://example.com
-```
+Skills are plain Markdown. The MCP server does the work.
 
 ## Agent
 
-### Site Auditor
+**Site Auditor** — four passes. Recon, crawl, analyze, report. Evidence-backed findings with prioritized fixes.
 
-A custom agent (`agents/site-auditor.md`) for systematic multi-pass site analysis:
+See [`agents/site-auditor.md`](agents/site-auditor.md).
 
-1. **Reconnaissance** — detect site type, configure settings
-2. **Crawl** — download with monitoring and failure retry
-3. **Analysis** — structure, errors, enrichment, synthesis (4 passes)
-4. **Report** — evidence-backed findings with prioritized recommendations
-
-## How It Works
+## Architecture
 
 ```
-AI Agent  ──skill──►  CrawlioMCP  ──HTTP──►  Crawlio App
-                      (stdio MCP)             (macOS, 127.0.0.1)
-                           │
-                           ▼
-                      observations.jsonl
-                      (per-project timeline)
+Your AI agent
+    │
+    ▼
+@crawlio/mcp  ─────►  5 abstract tools
+(aggregator)           discover / call / do / cortex / consult
+    │
+    ├── chrome           browser extension, live context
+    ├── headless         crawlio-agent-headless, RE skills
+    ├── app              Crawlio.app, persistent projects
+    └── headless-engine  fallback, zero dependencies
 ```
 
-**Skills** encode *judgment* — when to use which settings, how to interpret observations, what constitutes a finding.
+Skills reference concrete tool names. The aggregator routes them to the right pillar. Add a pillar, every skill gets the upgrade. No plugin release needed.
 
-**MCP server** handles *mechanics* — HTTP calls, file reads, protocol bridging.
+[Crawlio.app](https://crawlio.app) adds persistent projects and the full UI. Without it, the aggregator falls back to headless-engine. Crawling still works. Projects live in memory instead of on disk.
 
-This separation is what makes the plugin forkable: swap the judgment layer for your domain, keep the same mechanics.
+The [Chrome extension](https://github.com/Crawlio-app/crawlio-agent) adds live browser context: framework detection, network interception, console logs. Without it, those skills fall back to headless Chromium.
 
-### Optional: Chrome Extension
+Both optional. The server runs either way.
 
-For deeper analysis, install the [Crawlio Agent](https://github.com/crawlio/crawlio-agent) Chrome extension. It captures browser-side intelligence (framework detection, network requests, console logs, DOM snapshots) that enriches the observation log.
+## Structure
 
-## Forking
+```
+crawlio-plugin/
+├── .claude-plugin/
+│   └── plugin.json
+├── .mcp.json
+├── skills/
+│   ├── crawlio-mcp/
+│   ├── crawl-site/
+│   ├── extract-and-export/
+│   ├── observe/
+│   ├── finding/
+│   ├── audit-site/
+│   ├── web-research/
+│   ├── decompile-spa/
+│   ├── extract-secrets/
+│   └── design-system/
+├── agents/
+│   └── site-auditor.md
+├── FORKING.md
+└── LICENSE
+```
 
-This plugin is designed to be forked. See [FORKING.md](FORKING.md) for a guide on creating domain-specific versions:
+Each skill is a single `SKILL.md` inside its directory. Each file follows the [Agent Skills](https://agentskills.io) open standard.
 
-- **SEO Auditor** — meta tags, heading hierarchy, structured data, internal linking
-- **Security Scanner** — HTTPS enforcement, security headers, exposed endpoints
-- **Competitive Analysis** — multi-site framework comparison, third-party services
-- **Content Migration Planner** — URL mapping, redirect chains, content volume
+## Fork it
+
+This plugin is designed to be copied.
+
+SEO auditor. Security scanner. Competitive teardown. Content migration planner. Pick a domain, keep the tools, rewrite the skills.
+
+See [FORKING.md](FORKING.md).
 
 ## License
 

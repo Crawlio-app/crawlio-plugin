@@ -2,6 +2,8 @@
 name: crawlio-mcp
 description: Complete reference for the Crawlio MCP server — 37 tools, 6 code-mode tools, 4 resources, 4 prompts. Use this skill when orchestrating website crawling, export, enrichment, or analysis via Crawlio MCP.
 allowed-tools: mcp__crawlio__*
+license: MIT
+version: 2.0.0
 ---
 
 # Crawlio MCP Server

@@ -1,6 +1,8 @@
 ---
 name: web-research
 description: Use this skill when the user asks to "research a site", "compare sites", "analyze technology", or wants structured evidence-based web research. Teaches the acquire-normalize-analyze protocol using CrawlioMCP's composite analysis tools.
+license: MIT
+version: 2.0.0
 ---
 
 # web-research

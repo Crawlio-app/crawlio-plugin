@@ -1,6 +1,8 @@
 ---
 name: audit-site
 description: Use this skill when the user asks to "audit a site", "analyze a website", "review a site", "site health check", or wants a comprehensive analysis including technology stack, issues, and recommendations. Orchestrates a full crawl, enrichment capture, observation analysis, and findings report.
+license: MIT
+version: 2.0.0
 ---
 
 # audit-site

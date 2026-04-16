@@ -18,11 +18,16 @@ Skills are Markdown files that guide Claude's behavior. Edit them to focus on yo
 
 | File | What to Change |
 |------|---------------|
+| `skills/crawlio-mcp/SKILL.md` | Top-level entry skill — rewrite the overview and routing logic for your domain |
 | `skills/crawl-site/SKILL.md` | Settings presets, site type detection logic |
 | `skills/extract-and-export/SKILL.md` | Export format defaults, extraction pipeline steps |
 | `skills/observe/SKILL.md` | Which observations matter for your use case |
 | `skills/finding/SKILL.md` | Finding categories, quality criteria |
 | `skills/audit-site/SKILL.md` | Audit checklist, report structure |
+| `skills/web-research/SKILL.md` | Acquire-normalize-analyze protocol, rubric dimensions |
+| `skills/decompile-spa/SKILL.md` | Module-graph interpretation, router/state detection heuristics |
+| `skills/extract-secrets/SKILL.md` | Classification rules, authorization guardrails, rotation playbook |
+| `skills/design-system/SKILL.md` | Clustering thresholds, emit format defaults (Tailwind/CSS vars/DTCG) |
 
 ### Agent
 
@@ -67,6 +72,39 @@ Focus on web security issues:
 - Analyze third-party script origins
 
 **Finding categories**: Mixed content, missing security headers, exposed endpoints, information disclosure, unsafe third-party scripts
+
+### Reverse Engineer / Competitive Teardown
+
+Focus on understanding how a target application is built — bundler, router, state layer, design system — for authorized teardowns, migration planning, or competitive research on your own historical products.
+
+**`skills/decompile-spa/SKILL.md`** changes:
+- Add heuristics for niche bundlers your team encounters (e.g. Parcel, esbuild standalone)
+- Extend the router detection pattern set for framework-of-the-month cases
+- Tune the structural-search queries for project-specific naming conventions
+
+**`skills/design-system/SKILL.md`** changes:
+- Pre-populate the expected scale (e.g. 4-px grid) so the extractor flags deviations as findings
+- Emit format: default to your team's canonical token format (Tailwind vs CSS vars vs DTCG)
+
+**`skills/audit-site/SKILL.md`** changes:
+- New audit pass: "teardown report" combining the module graph from `decompile-spa` with the design tokens from `design-system`
+- Report structure: architecture section, routes inventory, state inventory, design-token inventory, gaps
+
+**Finding categories**: bundler drift, router misuse, state duplication, design-token sprawl, architectural anti-patterns
+
+**Authorization guardrail**: publish your fork's README with a prominent note that teardowns require authorization from the target owner. The `extract-secrets` skill is explicitly off-limits for teardowns of sites you do not own.
+
+**Example finding**:
+```
+create_finding({
+  title: "Legacy admin dashboard uses 4 state libraries concurrently",
+  url: "https://admin.ourcompany.com",
+  evidence: [],
+  synthesis: "Teardown detected Redux, Zustand, React Context, and URL-state in the same app. Recommend consolidation to Zustand (already primary in new features) before next migration wave.",
+  confidence: "high",
+  category: "reverse-engineering"
+})
+```
 
 ### Competitive Analysis
 
